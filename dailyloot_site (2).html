@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DailyLoot — Trending Finds & Honest Reviews</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#FBF6EC; --paper:#FFFFFF; --paper-2:#FFFDF8;
+    --ink:#1b2447; --ink-soft:#5c6480; --ink-faint:#9298ad;
+    --navy:#16244e; --gold:#C28F2C; --gold-soft:#E6C173; --gold-bg:#F6EACB;
+    --coral:#E8745B; --coral-deep:#D2563C; --mint:#3FA88A;
+    --line:rgba(27,36,71,0.10); --line-soft:rgba(27,36,71,0.06);
+    --shadow:0 18px 50px rgba(27,36,71,0.10); --shadow-sm:0 8px 24px rgba(27,36,71,0.07);
+    --disp:'Bricolage Grotesque',serif; --sans:'Hanken Grotesk',sans-serif;
+    --r:18px; --ease:cubic-bezier(0.22,1,0.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 28px;}
+
+  /* atmosphere */
+  .bg-deco{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+  .bg-deco::before,.bg-deco::after{content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;}
+  .bg-deco::before{width:46vw;height:46vw;top:-12vw;right:-10vw;background:radial-gradient(circle,var(--gold-bg),transparent 70%);}
+  .bg-deco::after{width:40vw;height:40vw;bottom:-12vw;left:-12vw;background:radial-gradient(circle,#FBE3DC,transparent 70%);}
+
+  /* header */
+  /* curated announcement bar */
+  .topbar{background:linear-gradient(135deg,var(--navy),#24386f);color:#fff;text-align:center;font-size:13.5px;font-weight:600;padding:9px 16px;letter-spacing:.01em;}
+  .topbar a{color:var(--gold-soft);font-weight:700;text-decoration:underline;text-underline-offset:2px;}
+  .topbar a:hover{color:#fff;}
+  .logo{display:flex;align-items:center;gap:11px;font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:-0.02em;color:var(--navy);cursor:pointer;}
+  .logo .mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,var(--navy),#24386f);display:grid;place-items:center;color:var(--gold-soft);font-family:var(--disp);font-weight:800;font-size:17px;box-shadow:var(--shadow-sm);}
+  .logo .mark span{background:linear-gradient(180deg,#F4D58A,#C28F2C);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+
+  header.nav{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--cream) 80%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft);}
+  .nav-inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;padding:14px 28px;max-width:1200px;margin:0 auto;}
+  /* left: Instagram DP */
+  .ig-dp{justify-self:start;width:46px;height:46px;border-radius:50%;overflow:hidden;border:2px solid var(--gold-soft);box-shadow:var(--shadow-sm);display:block;background:linear-gradient(140deg,var(--navy),#24386f);}
+  .ig-dp img{width:100%;height:100%;object-fit:cover;}
+  .ig-dp.dp-fallback{display:grid;place-items:center;color:var(--gold-soft);font-family:var(--disp);font-weight:800;font-size:16px;}
+  /* centre: handle */
+  .ig-center{justify-self:center;display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .ig-handle{position:relative;font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:-0.02em;color:var(--navy);line-height:1.1;padding-bottom:5px;}
+  .ig-handle::after{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:38px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--gold-soft),var(--gold));transition:width .3s var(--ease);}
+  .ig-handle:hover{color:var(--navy);}
+  .ig-handle:hover::after{width:100%;}
+  .ig-sub{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--ink-soft);}
+  .ig-sub:hover{color:var(--coral-deep);}
+  /* right: Instagram name */
+  .ig-name{justify-self:end;display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14.5px;color:var(--navy);padding:9px 15px;border:1px solid var(--line);border-radius:11px;background:var(--paper);transition:all .25s var(--ease);}
+  .ig-name:hover{border-color:var(--coral);color:var(--coral-deep);transform:translateY(-2px);}
+  /* secondary row */
+  .subnav{border-top:1px solid var(--line-soft);background:color-mix(in srgb,var(--cream) 60%,transparent);}
+  .subnav-inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;max-width:1200px;margin:0 auto;padding:10px 28px;}
+  .subnav-inner .nav-links{justify-self:start;}
+  .subnav-inner .search-mini{justify-self:center;}
+  .subnav-inner .hamburger{justify-self:start;}
+  .hamburger{display:none;background:var(--paper);border:1px solid var(--line);border-radius:10px;width:42px;height:42px;place-items:center;color:var(--navy);cursor:pointer;}
+  .nav-links{display:flex;align-items:center;gap:6px;}
+  .nav-links a{font-weight:600;font-size:14.5px;color:var(--ink-soft);padding:9px 15px;border-radius:10px;transition:all .25s var(--ease);cursor:pointer;}
+  .nav-links a:hover,.nav-links a.active{color:var(--navy);background:var(--paper);}
+  .search-mini{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:8px 13px;transition:border-color .25s;}
+  .search-mini:focus-within{border-color:var(--gold-soft);}
+  .search-mini input{border:none;outline:none;background:none;font-family:var(--sans);font-size:14px;color:var(--ink);width:220px;}
+  .search-mini svg{color:var(--ink-faint);flex-shrink:0;}
+
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:12px;cursor:pointer;border:none;transition:all .3s var(--ease);font-family:var(--sans);}
+  .btn-coral{background:linear-gradient(135deg,var(--coral),var(--coral-deep));color:#fff;box-shadow:0 10px 26px rgba(210,86,60,.30);}
+  .btn-coral:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(210,86,60,.40);}
+  .btn-gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold));color:#3a2c08;box-shadow:0 10px 26px rgba(194,143,44,.28);}
+  .btn-gold:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(194,143,44,.36);}
+  .btn-navy{background:var(--navy);color:#fff;}
+  .btn-navy:hover{transform:translateY(-2px);}
+  .btn-ghost{background:var(--paper);color:var(--navy);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--navy);transform:translateY(-2px);}
+  .btn .arr{transition:transform .3s var(--ease);}
+  .btn:hover .arr{transform:translateX(4px);}
+
+  /* hero */
+  .hero{padding:74px 0 30px;position:relative;}
+  .hero-badge{display:inline-flex;align-items:center;gap:9px;background:var(--paper);border:1px solid var(--line);border-radius:100px;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:24px;box-shadow:var(--shadow-sm);}
+  .hero-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px rgba(63,168,138,.18);}
+  .hero h1{font-family:var(--disp);font-weight:800;font-size:clamp(2.6rem,6vw,4.7rem);line-height:1.02;letter-spacing:-0.035em;color:var(--navy);max-width:16ch;margin-bottom:20px;}
+  .hero h1 .hl{position:relative;white-space:nowrap;color:var(--coral-deep);}
+  .hero h1 .hl::after{content:"";position:absolute;left:0;right:0;bottom:.07em;height:.28em;background:var(--gold-soft);opacity:.5;z-index:-1;border-radius:3px;}
+  .hero p{font-size:clamp(1.05rem,2vw,1.25rem);color:var(--ink-soft);max-width:54ch;margin-bottom:32px;}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+  .hero-trust{display:flex;align-items:center;gap:22px;margin-top:34px;flex-wrap:wrap;}
+  .hero-trust .ht{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink-soft);font-weight:500;}
+  .hero-trust .ht svg{color:var(--gold);}
+
+  /* controls */
+  .controls{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:50px 0 26px;}
+  .chips{display:flex;gap:9px;flex-wrap:wrap;}
+  .chip{font-weight:600;font-size:13.5px;padding:9px 17px;border-radius:100px;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);cursor:pointer;transition:all .25s var(--ease);}
+  .chip:hover{border-color:var(--gold-soft);color:var(--navy);}
+  .chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .result-count{font-size:14px;color:var(--ink-faint);font-weight:500;}
+
+  /* product grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;padding-bottom:40px;}
+  .card{background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .4s var(--ease);display:flex;flex-direction:column;box-shadow:var(--shadow-sm);}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--line);}
+  .card-media{position:relative;aspect-ratio:4/3;overflow:hidden;display:grid;place-items:center;}
+  .card-media .ph{position:absolute;inset:0;display:grid;place-items:center;}
+  .card-media .ph svg{width:70px;height:70px;opacity:.9;}
+  .card-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease);}
+  .card:hover .card-media img{transform:scale(1.06);}
+  .card-cat{position:absolute;top:13px;left:13px;z-index:2;font-size:11.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;padding:6px 11px;border-radius:8px;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(6px);color:var(--navy);}
+  .card-deal{position:absolute;top:13px;right:13px;z-index:2;font-size:11.5px;font-weight:800;padding:6px 10px;border-radius:8px;background:linear-gradient(135deg,var(--coral),var(--coral-deep));color:#fff;box-shadow:0 6px 16px rgba(210,86,60,.35);}
+  .card-body{padding:20px 21px 22px;display:flex;flex-direction:column;flex:1;}
+  .card-rate{display:flex;align-items:center;gap:6px;margin-bottom:9px;font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .stars{display:inline-flex;gap:1px;color:var(--gold);}
+  .card h3{font-family:var(--disp);font-weight:700;font-size:1.22rem;letter-spacing:-0.02em;color:var(--navy);line-height:1.2;margin-bottom:9px;}
+  .card p{font-size:14.5px;color:var(--ink-soft);margin-bottom:16px;flex:1;}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;}
+  .price{font-family:var(--disp);font-weight:800;font-size:1.3rem;color:var(--navy);}
+  .price small{font-size:.78rem;color:var(--ink-faint);font-weight:600;text-decoration:line-through;margin-left:6px;}
+  .read-link{font-weight:700;font-size:14px;color:var(--coral-deep);display:inline-flex;align-items:center;gap:6px;}
+
+  /* section heading */
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 40px;}
+  .sec-eyebrow{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+  .sec-head h2{font-family:var(--disp);font-weight:800;font-size:clamp(1.9rem,4vw,2.7rem);letter-spacing:-0.03em;color:var(--navy);line-height:1.08;}
+  .sec-head p{color:var(--ink-soft);margin-top:14px;font-size:1.05rem;}
+
+  /* newsletter */
+  .news{margin:30px 0 70px;}
+  .news-card{background:linear-gradient(140deg,var(--navy),#24386f);border-radius:26px;padding:54px 50px;position:relative;overflow:hidden;text-align:center;box-shadow:var(--shadow);}
+  .news-card::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(230,193,115,.30),transparent 70%);top:-120px;right:-60px;}
+  .news-card::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(232,116,91,.26),transparent 70%);bottom:-120px;left:-40px;}
+  .news-card h2{font-family:var(--disp);font-weight:800;font-size:clamp(1.7rem,3.6vw,2.5rem);color:#fff;letter-spacing:-0.03em;position:relative;margin-bottom:12px;}
+  .news-card p{color:rgba(255,255,255,.78);position:relative;max-width:46ch;margin:0 auto 28px;}
+  .news-form{display:flex;gap:11px;max-width:440px;margin:0 auto;position:relative;flex-wrap:wrap;justify-content:center;}
+  .news-form input{flex:1;min-width:220px;border:none;outline:none;border-radius:12px;padding:14px 18px;font-family:var(--sans);font-size:15px;background:rgba(255,255,255,.95);color:var(--ink);}
+  .news-note{position:relative;color:rgba(255,255,255,.6);font-size:13px;margin-top:14px;}
+
+  /* footer */
+  footer{background:var(--navy);color:rgba(255,255,255,.72);padding:56px 0 30px;}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.12);}
+  .foot-brand .logo{color:#fff;margin-bottom:14px;}
+  .foot-brand p{font-size:14.5px;max-width:34ch;color:rgba(255,255,255,.6);}
+  .foot-col h4{font-family:var(--disp);font-weight:700;color:#fff;font-size:15px;margin-bottom:15px;letter-spacing:-0.01em;}
+  .foot-col a{display:block;font-size:14.5px;margin-bottom:10px;color:rgba(255,255,255,.66);transition:color .25s;}
+  .foot-col a:hover{color:var(--gold-soft);}
+  .foot-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding-top:24px;font-size:13px;color:rgba(255,255,255,.5);}
+  .disclosure{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;font-size:12.5px;color:rgba(255,255,255,.6);margin-top:18px;line-height:1.6;}
+  .foot-rixsto{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:26px;padding:24px 28px;border-radius:16px;background:linear-gradient(135deg,rgba(230,193,115,.16),rgba(232,116,91,.12));border:1px solid rgba(230,193,115,.35);}
+  .foot-rixsto .fr-eyebrow{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:6px;}
+  .foot-rixsto .fr-text strong{font-family:var(--disp);font-weight:700;font-size:1.18rem;color:#fff;letter-spacing:-0.01em;line-height:1.3;}
+  .foot-rixsto .fr-btn{flex-shrink:0;font-size:15.5px;padding:13px 26px;}
+
+  /* ===== POST / REVIEW VIEW ===== */
+  .post{padding:36px 0 70px;max-width:820px;margin:0 auto;}
+  .crumb{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--ink-soft);margin-bottom:26px;cursor:pointer;transition:color .25s;}
+  .crumb:hover{color:var(--coral-deep);}
+  .post-cat{font-weight:700;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  .post h1{font-family:var(--disp);font-weight:800;font-size:clamp(2rem,4.6vw,3.2rem);line-height:1.06;letter-spacing:-0.035em;color:var(--navy);margin-bottom:18px;}
+  .post-meta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;color:var(--ink-faint);font-size:14px;font-weight:500;margin-bottom:28px;}
+  .post-meta .stars{color:var(--gold);}
+  .post-hero{aspect-ratio:16/9;border-radius:20px;overflow:hidden;margin-bottom:34px;display:grid;place-items:center;position:relative;box-shadow:var(--shadow);}
+  .post-hero .ph svg{width:96px;height:96px;opacity:.9}
+  .post-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .post-body{font-size:1.12rem;color:#33384f;line-height:1.78;}
+  .post-body p{margin-bottom:22px;}
+  .post-body h2{font-family:var(--disp);font-weight:700;font-size:1.6rem;color:var(--navy);letter-spacing:-0.02em;margin:38px 0 14px;}
+  .lead{font-size:1.24rem;color:var(--ink);font-weight:500;line-height:1.66;}
+
+  /* affiliate CTA box */
+  .aff{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:26px 28px;margin:30px 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+  .aff::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--gold-soft),var(--coral));}
+  .aff-row{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .aff-info .lbl{font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .aff-info h4{font-family:var(--disp);font-weight:700;font-size:1.3rem;color:var(--navy);letter-spacing:-0.02em;}
+  .aff-info .pr{font-size:14px;color:var(--ink-soft);margin-top:5px;}
+  .aff-info .pr b{color:var(--coral-deep);font-size:1.15rem;font-family:var(--disp);}
+
+  .verdict{background:linear-gradient(140deg,#FFFDF8,#F6EACB);border:1px solid var(--gold-soft);border-radius:var(--r);padding:30px 30px;margin:36px 0;}
+  .verdict .lbl{font-weight:800;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+  .verdict h3{font-family:var(--disp);font-weight:800;font-size:1.5rem;color:var(--navy);margin-bottom:10px;letter-spacing:-0.02em;}
+
+  .proscons{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:30px 0;}
+  .pc{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;}
+  .pc h4{font-family:var(--disp);font-weight:700;font-size:1.05rem;margin-bottom:14px;display:flex;align-items:center;gap:9px;color:var(--navy);}
+  .pc.pros h4{color:var(--mint);}.pc.cons h4{color:var(--coral-deep);}
+  .pc ul{list-style:none;}
+  .pc li{font-size:14.5px;color:var(--ink-soft);padding-left:24px;position:relative;margin-bottom:9px;line-height:1.5;}
+  .pc.pros li::before{content:"✓";position:absolute;left:0;color:var(--mint);font-weight:800;}
+  .pc.cons li::before{content:"✕";position:absolute;left:0;color:var(--coral-deep);font-weight:800;}
+
+  .related{margin-top:54px;}
+  .related h2{font-family:var(--disp);font-weight:800;font-size:1.6rem;color:var(--navy);letter-spacing:-0.02em;margin-bottom:22px;}
+  .related .grid{grid-template-columns:repeat(3,1fr);gap:20px;}
+
+  .reveal{opacity:0;transform:translateY(22px);animation:rise .7s var(--ease) forwards;}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  @media(max-width:980px){.grid,.related .grid{grid-template-columns:repeat(2,1fr)}.foot-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:680px){
+    .grid,.related .grid,.proscons{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr;gap:28px}
+    .news-card{padding:40px 26px}.wrap{padding:0 20px}.nav-inner{padding:12px 18px}
+    .aff-row{flex-direction:column;align-items:flex-start}
+    .foot-rixsto{flex-direction:column;align-items:flex-start;text-align:left;padding:22px 20px;}
+    /* header: keep DP left + handle centre, drop the right Instagram button on small screens */
+    .ig-name{display:none}
+    .ig-handle{font-size:18px}
+    .subnav-inner{padding:9px 18px}
+    .hamburger{display:grid}
+    /* collapsed mobile menu */
+    .nav-links{position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;gap:0;background:var(--paper);border-bottom:1px solid var(--line);padding:8px;box-shadow:var(--shadow);display:none;z-index:60;}
+    .nav-links.open{display:flex;}
+    .nav-links a{padding:13px 16px;border-radius:10px;}
+    .subnav{position:relative;}
+    .search-mini input{width:100%;}
+    .search-mini{flex:1;}
+  }
+</style>
+</head>
+<body>
+  <div class="bg-deco"></div>
+
+  <!-- curated announcement bar -->
+  <div class="topbar">
+    ✨ 100+ Curated Picks → <a href="https://rixsto.in" target="_blank" rel="noopener">Explore RIXSTO</a>
+  </div>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <!-- left: Instagram DP -->
+      <a class="ig-dp" href="https://www.instagram.com/dailyloot.co" target="_blank" rel="noopener" aria-label="DailyLoot on Instagram">
+        <img src="https://onlinefinds.rixsto.in/dailyloot.jpg" alt="@dailyloot.co" onerror="this.style.display='none';this.parentNode.classList.add('dp-fallback');this.parentNode.innerHTML='DL';" />
+      </a>
+
+      <!-- centre: username -->
+      <div class="ig-center">
+        <a class="ig-handle" href="https://www.instagram.com/dailyloot.co" target="_blank" rel="noopener">@dailyloot.co</a>
+      </div>
+
+      <!-- right: Instagram name link -->
+      <a class="ig-name" href="https://www.instagram.com/dailyloot.co" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+        Instagram
+      </a>
+    </div>
+
+    <!-- secondary row: nav + search (desktop) / hamburger (mobile) -->
+    <div class="subnav">
+      <div class="subnav-inner">
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <nav class="nav-links" id="navLinks">
+          <a data-nav="home" class="active">Shop</a>
+          <a data-nav="blog">Reviews</a>
+          <a data-nav="about">About</a>
+        </nav>
+        <div class="search-mini">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="6"/><path d="m18 18-4-4"/></svg>
+          <input id="search" type="text" placeholder="Search finds…" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <div class="logo"><span class="mark"><span>DL</span></span> DailyLoot</div>
+          <p>Hand-picked trending products and honest reviews — so you only buy the stuff that's actually worth it.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Explore</h4>
+          <a data-nav="home">All finds</a>
+          <a data-nav="blog">Latest reviews</a>
+          <a data-nav="about">About us</a>
+        </div>
+        <div class="foot-col">
+          <h4>Follow</h4>
+          <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://rixsto.in/" target="_blank" rel="noopener">Our store</a>
+          <a href="mailto:hello@dailyloot.example">Email us</a>
+        </div>
+      </div>
+      <div class="foot-rixsto">
+        <div class="fr-text">
+          <span class="fr-eyebrow">Our main store &amp; blog</span>
+          <strong>Better deals, exclusive picks &amp; full reviews live on RIXSTO.</strong>
+        </div>
+        <a class="btn btn-gold fr-btn" href="https://rixsto.in" target="_blank" rel="noopener">Explore RIXSTO <span class="arr">→</span></a>
+      </div>
+      <div class="disclosure">
+        <b>Affiliate disclosure:</b> Some links on this site are affiliate links. If you buy through them, we may earn a small commission at no extra cost to you. We only recommend products we genuinely think are worth it. Thanks for supporting DailyLoot!
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 RIXSTO. All rights reserved.</span>
+        <span><a href="https://rixsto.in" target="_blank" rel="noopener" style="color:var(--gold-soft);font-weight:700;">Explore RIXSTO →</a></span>
+      </div>
+    </div>
+  </footer>
+
+<script>
+/* =========================================================================
+   HOW TO ADD A PRODUCT + ITS BLOG REVIEW
+   -------------------------------------------------------------------------
+   Copy one whole { ... } block below and paste it as a new entry in PRODUCTS.
+   Fields:
+     id        : short unique slug, lowercase, no spaces (used in the URL)
+     title     : product name
+     category  : one of the CATEGORIES names (or add a new one to CATEGORIES)
+     image     : a photo URL (leave "" to show a nice coloured placeholder)
+     accent    : placeholder colour if no image (any hex)
+     price/was : current price / original price (strings; was is optional)
+     rating    : 0–5 (supports halves like 4.5)
+     deal      : small badge text e.g. "30% OFF" (leave "" for none)
+     excerpt   : one-line summary shown on the card
+     >>> affiliate : YOUR AFFILIATE LINK. Paste your Amazon/store link here.
+     post      : the blog review shown when the card is clicked
+        lead     : opening line (bold intro)
+        sections : [{h:"Heading", p:"Paragraph text"}, ...]
+        pros/cons: arrays of short strings
+        verdict  : closing recommendation
+   The affiliate link automatically appears as buttons at the TOP, MIDDLE
+   and END of every review. Just set "affiliate" and you're done.
+   ========================================================================= */
+
+const CATEGORIES = ["All","Electronics","Home","Kitchen","Beauty","Fitness","Accessories"];
+
+// === Your live product sheet (published CSV). Edit the sheet to add/remove products. ===
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vThNEsj5PCnNydWPjiZDOqtnYc-s2rhGRTHGrnKR-ZdcxniqcB6qYVa4J2g074EJkEmhPNNNnBoP38z/pub?output=csv";
+
+// PRODUCTS is filled from the sheet at load. The list below is a fallback
+// shown only if the sheet can't be reached, so the page never looks empty.
+let PRODUCTS = [];
+
+const FALLBACK_PRODUCTS = [
+  {
+    id:"wireless-earbuds-pro",
+    title:"NovaBuds Pro Wireless Earbuds",
+    category:"Electronics",
+    image:"", accent:"#3b5bdb",
+    price:"₹1,799", was:"₹3,999",
+    rating:4.5, deal:"55% OFF",
+    excerpt:"Punchy sound, 36-hour battery and ANC that genuinely works — at a price that feels illegal.",
+    affiliate:"#REPLACE-WITH-YOUR-AFFILIATE-LINK",
+    post:{
+      lead:"If you've been waiting for budget earbuds that don't sound like a tin can, these are the pair I keep recommending to everyone who asks.",
+      sections:[
+        {h:"Why they stand out", p:"At this price you expect compromises, but the NovaBuds Pro punch well above their weight. The bass is full without drowning the mids, and active noise cancellation actually quietens a noisy commute rather than just muffling it slightly."},
+        {h:"Battery & comfort", p:"You get roughly 8 hours on the buds and another 28 in the case — so realistically you charge once a week. They're light enough to forget you're wearing them, and the silicone tips seal well without that fatiguing in-ear pressure."},
+        {h:"Anything to watch?", p:"The companion app is a little basic, and the touch controls take a day to get used to. Neither is a dealbreaker once they're set up the way you like."}
+      ],
+      pros:["Genuine, effective noise cancellation","36 hours total battery life","Comfortable for long sessions","Fast USB-C charging"],
+      cons:["App features are minimal","Touch controls feel sensitive at first"],
+      verdict:"For under ₹2,000 these are a steal. If you want a no-fuss daily pair with real ANC, grab them before the deal ends."
+    }
+  },
+  {
+    id:"smart-led-strip",
+    title:"GlowDrift Smart LED Light Strip (5m)",
+    category:"Home",
+    image:"", accent:"#7048e8",
+    price:"₹699", was:"₹1,499",
+    rating:4,
+    deal:"BESTSELLER",
+    excerpt:"App + music-sync RGB lighting that transforms a room in ten minutes flat.",
+    affiliate:"#REPLACE-WITH-YOUR-AFFILIATE-LINK",
+    post:{
+      lead:"This is the single cheapest upgrade that made my room look twice as expensive — and it installs in minutes.",
+      sections:[
+        {h:"Setup is genuinely easy", p:"Peel, stick, plug in, connect the app. The adhesive is strong enough to stay up but peels cleanly if you reposition it. The strip bends around corners with the little clips included."},
+        {h:"The fun part", p:"Music sync is the highlight — the colours actually react to the beat rather than flickering randomly. There are dozens of presets, and you can dim it to a warm glow for movie nights."},
+        {h:"Honest notes", p:"The included remote is fine but the app gives you far more control. Wi-Fi is 2.4GHz only, which is normal at this price but worth knowing."}
+      ],
+      pros:["Effortless 10-minute install","Surprisingly good music sync","App + voice assistant support","Very cheap for 5 metres"],
+      cons:["2.4GHz Wi-Fi only","Remote is basic vs the app"],
+      verdict:"Best bang-for-buck room upgrade on this list. If you want instant ambience without spending much, this is the one."
+    }
+  },
+  {
+    id:"insulated-bottle",
+    title:"TerraFlask Insulated Steel Bottle (1L)",
+    category:"Fitness",
+    image:"", accent:"#0ca678",
+    price:"₹899", was:"₹1,799",
+    rating:5,
+    deal:"",
+    excerpt:"Keeps drinks cold for 24 hours and hot for 12 — leak-proof and built like a tank.",
+    affiliate:"#REPLACE-WITH-YOUR-AFFILIATE-LINK",
+    post:{
+      lead:"I've tested a lot of bottles and this is the first one that genuinely kept ice overnight in an Indian summer.",
+      sections:[
+        {h:"Insulation that delivers", p:"Double-walled vacuum steel that holds cold for a full day. I filled it with ice water in the morning and there were still cubes that evening — no condensation on the outside either."},
+        {h:"Build & everyday use", p:"The powder-coated finish doesn't slip, the lid seals completely (I've thrown it in a bag sideways with zero leaks), and the wide mouth fits ice cubes and is easy to clean."},
+        {h:"Small trade-offs", p:"At 1 litre it's on the heavier side when full, and it won't fit some car cup holders. For a gym or desk bottle, those barely matter."}
+      ],
+      pros:["24h cold / 12h hot, as claimed","Truly leak-proof lid","Durable anti-slip finish","Easy to clean wide mouth"],
+      cons:["Heavy when full","Too wide for some cup holders"],
+      verdict:"If you only buy one bottle this year, make it this. Practically indestructible and the insulation is the real deal."
+    }
+  },
+  {
+    id:"vitamin-c-serum",
+    title:"Lumè 15% Vitamin C Glow Serum",
+    category:"Beauty",
+    image:"", accent:"#f76707",
+    price:"₹549", was:"₹999",
+    rating:4.5,
+    deal:"NEW",
+    excerpt:"Lightweight brightening serum that sinks in fast and actually evens out tone over a few weeks.",
+    affiliate:"#REPLACE-WITH-YOUR-AFFILIATE-LINK",
+    post:{
+      lead:"Vitamin C serums are everywhere, but most are either sticky or fizzle out fast. This one struck a rare balance.",
+      sections:[
+        {h:"Texture & feel", p:"It's a thin, fast-absorbing fluid — no tackiness, no pilling under sunscreen or makeup. A few drops cover the whole face and it layers cleanly into a morning routine."},
+        {h:"Results over time", p:"Around the three-week mark, dullness lifted and a couple of old spots faded noticeably. It's not an overnight miracle — but it's a steady, visible improvement with daily use."},
+        {h:"Worth knowing", p:"Like all vitamin C, store it away from direct light and always follow with SPF in the morning. Patch-test first if your skin is sensitive."}
+      ],
+      pros:["Lightweight, non-sticky finish","Visible brightening in ~3 weeks","Layers well under SPF/makeup","Affordable for the concentration"],
+      cons:["Needs consistent daily use","Glass dropper is a little fragile"],
+      verdict:"A reliable, beginner-friendly vitamin C that punches above its price. Great entry point if you're starting a brightening routine."
+    }
+  },
+  {
+    id:"mini-projector",
+    title:"CinePop Mini Portable Projector",
+    category:"Electronics",
+    image:"", accent:"#1098ad",
+    price:"₹4,299", was:"₹7,999",
+    rating:4,
+    deal:"46% OFF",
+    excerpt:"Pocket-sized 1080p-supported projector that turns any wall into movie night.",
+    affiliate:"#REPLACE-WITH-YOUR-AFFILIATE-LINK",
+    post:{
+      lead:"For the price of a few cinema tickets, this little box turned my blank bedroom wall into a 100-inch screen.",
+      sections:[
+        {h:"Picture quality", p:"Native resolution is modest but it accepts 1080p input and looks genuinely good in a dark room. Auto-keystone straightens the image quickly, and a 100-inch picture from across a small room is easy."},
+        {h:"Setup & connectivity", p:"HDMI, USB and screen-mirroring all work out of the box, so plugging in a phone, laptop or streaming stick takes seconds. The built-in speaker is okay; pair a Bluetooth speaker for the full effect."},
+        {h:"Where it struggles", p:"It's a low-light device — daytime viewing washes out. Treat it as a night-time / dark-room projector and you'll be delighted."}
+      ],
+      pros:["Big 100-inch image for the price","Auto-keystone & easy focus","HDMI/USB/mirroring built in","Truly portable & light"],
+      cons:["Needs a dark room","Built-in speaker is just okay"],
+      verdict:"A brilliant budget entry into projectors for movie nights and gaming. Pair it with a Bluetooth speaker and you've got a home cinema for cheap."
+    }
+  },
+  {
+    id:"coffee-press",
+    title:"BrewLab French Press (600ml)",
+    category:"Kitchen",
+    image:"", accent:"#e8590c",
+    price:"₹749", was:"₹1,299",
+    rating:4.5,
+    deal:"",
+    excerpt:"Thick borosilicate glass and a 4-level filter that makes café-grade coffee at home.",
+    affiliate:"#REPLACE-WITH-YOUR-AFFILIATE-LINK",
+    post:{
+      lead:"I switched from instant to this French press and genuinely stopped buying coffee out — it's that good.",
+      sections:[
+        {h:"The coffee", p:"The 4-layer stainless filter keeps grounds out of your cup far better than cheaper presses. You get a rich, full-bodied brew with the oils intact — something paper filters strip away."},
+        {h:"Build quality", p:"The glass is thick borosilicate that handles boiling water without fuss, and it's wrapped in a protective frame. Everything disassembles for cleaning and is dishwasher-safe."},
+        {h:"Tips", p:"Use a coarse grind and a 4-minute steep for the best results. The 600ml size makes about two large mugs per press."}
+      ],
+      pros:["Rich, sediment-free coffee","Thick heat-resistant glass","Fully dishwasher-safe","Great size for two cups"],
+      cons:["Needs a coarse grind to shine","Glass still needs gentle handling"],
+      verdict:"The easiest upgrade from instant coffee you can make. Pays for itself in a couple of weeks of skipped café runs."
+    }
+  }
+];
+
+/* ------------------------------------------------------------------ */
+const app = document.getElementById('app');
+const fmt = s => s||"";
+const ICONS = {
+  Electronics:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+  Home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg>',
+  Kitchen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3v7a3 3 0 0 0 6 0V3M9 10v11"/><path d="M17 3c-1.5 0-2.5 2-2.5 5s1 4 2.5 4 2.5-1 2.5-4-1-5-2.5-5ZM17 16v5"/></svg>',
+  Beauty:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3h6l-1 5H10ZM10 8h4v3a2 2 0 0 1-4 0Z"/><path d="M12 13v8M9 21h6"/></svg>',
+  Fitness:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8v8M18 8v8M4 10v4M20 10v4M6 12h12"/></svg>',
+  Accessories:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 7h12l-1 13H7ZM9 7a3 3 0 0 1 6 0"/></svg>',
+  All:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'
+};
+const catIcon = c => ICONS[c]||ICONS.All;
+
+function starsHTML(r){
+  let full=Math.floor(r), half=(r-full)>=0.5, h='';
+  for(let i=0;i<5;i++){
+    if(i<full) h+='<svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor"><path d="m10 1 2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.8 4.8 17.1l1-5.8L1.5 7.2l5.9-.9z"/></svg>';
+    else if(i===full&&half) h+='<svg width="15" height="15" viewBox="0 0 20 20"><defs><linearGradient id="hg"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="rgba(0,0,0,.12)"/></linearGradient></defs><path fill="url(#hg)" d="m10 1 2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.8 4.8 17.1l1-5.8L1.5 7.2l5.9-.9z"/></svg>';
+    else h+='<svg width="15" height="15" viewBox="0 0 20 20" fill="rgba(0,0,0,.12)"><path d="m10 1 2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.8 4.8 17.1l1-5.8L1.5 7.2l5.9-.9z"/></svg>';
+  }
+  return h;
+}
+function mediaHTML(p){
+  if(p.image) return `<img src="${p.image}" alt="${p.title}" loading="lazy"/>`;
+  return `<div class="ph" style="background:linear-gradient(140deg, ${p.accent}, color-mix(in srgb, ${p.accent} 55%, #11183a));color:#fff;">${catIcon(p.category)}</div>`;
+}
+function cardHTML(p){
+  return `<article class="card" data-id="${p.id}">
+    <div class="card-media">
+      ${p.deal?`<span class="card-deal">${p.deal}</span>`:''}
+      <span class="card-cat">${p.category}</span>
+      ${mediaHTML(p)}
+    </div>
+    <div class="card-body">
+      <div class="card-rate"><span class="stars">${starsHTML(p.rating)}</span> ${p.rating.toFixed(1)}</div>
+      <h3>${p.title}</h3>
+      <p>${p.excerpt}</p>
+      <div class="card-foot">
+        <div class="price">${p.price}${p.was?`<small>${p.was}</small>`:''}</div>
+        <span class="read-link">Read review <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h11M11 5l5 5-5 5"/></svg></span>
+      </div>
+    </div>
+  </article>`;
+}
+function affAttrs(p){
+  const live = p.affiliate && !p.affiliate.startsWith('#');
+  if(live) return `href="${p.affiliate}" target="_blank" rel="noopener sponsored nofollow"`;
+  return `href="#" data-stub="1"`;
+}
+function affBox(p,label){
+  return `<div class="aff"><div class="aff-row">
+    <div class="aff-info"><div class="lbl">${label}</div><h4>${p.title}</h4>
+      <div class="pr">Today's price: <b>${p.price}</b> ${p.was?`<span style="text-decoration:line-through;color:var(--ink-faint)">${p.was}</span>`:''}</div></div>
+    <a class="btn btn-coral" ${affAttrs(p)}>Check price <span class="arr">→</span></a>
+  </div></div>`;
+}
+
+/* ---------- VIEWS ---------- */
+let activeCat="All", query="";
+
+function viewHome(){
+  setActiveNav('home');
+  const hero = `<section class="hero"><div class="wrap">
+    <div class="hero-badge reveal"><span class="dot"></span> New finds added every day</div>
+    <h1 class="reveal" style="animation-delay:.05s">Trending products,<br><span class="hl">actually worth it.</span></h1>
+    <p class="reveal" style="animation-delay:.12s">We hunt down the internet's best gadgets, home upgrades and daily-life finds — then test and review them honestly, so you buy once and buy right.</p>
+    <div class="hero-actions reveal" style="animation-delay:.18s">
+      <a class="btn btn-coral" href="#shop">Browse the finds <span class="arr">→</span></a>
+      <a class="btn btn-ghost" data-nav="about">How it works</a>
+    </div>
+    <div class="hero-trust reveal" style="animation-delay:.24s">
+      <span class="ht"><svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="m10 1 2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.8 4.8 17.1l1-5.8L1.5 7.2l5.9-.9z"/></svg> Honest, hands-on reviews</span>
+      <span class="ht"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10l3 3 7-7"/></svg> Only stuff we'd buy ourselves</span>
+      <span class="ht"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v16M5 7l5-5 5 5"/></svg> Updated daily</span>
+    </div>
+  </div></section>`;
+
+  const chips = CATEGORIES.map(c=>`<button class="chip ${c===activeCat?'active':''}" data-cat="${c}">${c}</button>`).join('');
+  const grid = `<section id="shop"><div class="wrap">
+    <div class="controls">
+      <div class="chips">${chips}</div>
+      <div class="result-count" id="rc"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div></section>`;
+
+  const news = `<section class="news"><div class="wrap"><div class="news-card">
+    <h2>Never miss a drop</h2>
+    <p>Get the week's best finds and exclusive deals straight to your inbox. No spam — just the good stuff.</p>
+    <div class="news-form">
+      <input id="nlEmail" type="email" placeholder="you@email.com" />
+      <button class="btn btn-gold" id="nlBtn">Subscribe</button>
+    </div>
+    <div class="news-note" id="nlNote">Join 0 readers hunting better deals.</div>
+  </div></div></section>`;
+
+  app.innerHTML = hero + grid + news;
+  renderGrid();
+  bindCards();
+  document.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{activeCat=ch.dataset.cat;viewHome();window.scrollTo({top:document.getElementById('shop').offsetTop-80,behavior:'smooth'});});
+  const nlBtn=document.getElementById('nlBtn');
+  if(nlBtn) nlBtn.onclick=()=>{const e=document.getElementById('nlEmail').value.trim();const n=document.getElementById('nlNote');
+    if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){n.textContent="🎉 You're in! Check your inbox to confirm.";document.getElementById('nlEmail').value='';}
+    else{n.textContent='Please enter a valid email address.';}};
+}
+
+function renderGrid(){
+  const grid=document.getElementById('grid'); if(!grid)return;
+  let list=PRODUCTS.filter(p=>activeCat==='All'||p.category===activeCat);
+  if(query) list=list.filter(p=>(p.title+p.excerpt+p.category).toLowerCase().includes(query));
+  grid.innerHTML = list.length?list.map(cardHTML).join(''):`<p style="color:var(--ink-soft);grid-column:1/-1;padding:30px 0;">No finds match that search yet — try another keyword.</p>`;
+  const rc=document.getElementById('rc'); if(rc) rc.textContent=`${list.length} ${list.length===1?'find':'finds'}`;
+  bindCards();
+}
+function bindCards(){
+  document.querySelectorAll('.card').forEach(c=>c.onclick=()=>{location.hash='#/post/'+c.dataset.id;});
+}
+
+function viewPost(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p){location.hash='';return;}
+  setActiveNav('blog');
+  const secs=p.post.sections||[];
+  const mid=Math.ceil(secs.length/2);
+  const secHTML=secs.map((s,i)=>{
+    let block=`<h2>${s.h}</h2><p>${s.p}</p>`;
+    if(i===mid-1){ block+=affBox(p,"👇 Where to get it"); }
+    return block;
+  }).join('');
+  // when there are no detailed sections (sheet mode), still place a MIDDLE affiliate box
+  const midBox = secs.length ? '' : affBox(p,"👇 Where to get it");
+  const related=PRODUCTS.filter(x=>x.id!==p.id && x.category===p.category).slice(0,3);
+  const relList=(related.length?related:PRODUCTS.filter(x=>x.id!==p.id).slice(0,3));
+
+  app.innerHTML=`<article class="post"><div class="wrap" style="padding:0">
+    <span class="crumb" data-nav="home"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5l-5 5 5 5"/></svg> Back to all finds</span>
+    <div class="post-cat">${p.category}</div>
+    <h1>${p.title} — Honest Review</h1>
+    <div class="post-meta">
+      <span class="stars">${starsHTML(p.rating)}</span><span>${p.rating.toFixed(1)} / 5</span>
+      <span>•</span><span>Updated daily</span><span>•</span><span>4 min read</span>
+    </div>
+    <div class="post-hero">${p.image?`<img src="${p.image}" alt="${p.title}">`:`<div class="ph" style="position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(140deg, ${p.accent}, color-mix(in srgb, ${p.accent} 55%, #11183a));color:#fff;">${catIcon(p.category)}</div>`}</div>
+    <div class="post-body">
+      ${p.post.lead?`<p class="lead">${p.post.lead}</p>`:''}
+      ${affBox(p,"⚡ Quick verdict — best price")}
+      ${secHTML}
+      ${(p.post.pros.length||p.post.cons.length)?`<div class="proscons">
+        <div class="pc pros"><h4>👍 What we loved</h4><ul>${p.post.pros.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        <div class="pc cons"><h4>👎 Worth knowing</h4><ul>${p.post.cons.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+      </div>`:''}
+      ${midBox}
+      <div class="verdict">
+        <div class="lbl">★ Our verdict</div>
+        <h3>${p.title}</h3>
+        ${p.post.verdict?`<p style="color:var(--ink-soft);margin-bottom:20px">${p.post.verdict}</p>`:'<p style="color:var(--ink-soft);margin-bottom:20px">A solid pick worth checking out at today\u2019s price.</p>'}
+        <a class="btn btn-coral" ${affAttrs(p)}>Get it at the best price <span class="arr">→</span></a>
+      </div>
+    </div>
+    <div class="related">
+      <h2>More finds you'll like</h2>
+      <div class="grid">${relList.map(cardHTML).join('')}</div>
+    </div>
+  </div></article>`;
+  bindCards();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function viewBlog(){
+  setActiveNav('blog');
+  app.innerHTML=`<section class="hero" style="padding-bottom:0"><div class="wrap">
+    <div class="sec-head" style="margin-bottom:10px">
+      <div class="sec-eyebrow">The Review Desk</div>
+      <h2>Every find, reviewed honestly</h2>
+      <p>Browse all our hands-on reviews. Tap any product to read the full breakdown — pros, cons, and where to get the best price.</p>
+    </div></div></section>
+    <section style="padding-top:30px"><div class="wrap"><div class="grid" id="grid"></div></div></section>`;
+  document.getElementById('grid').innerHTML=PRODUCTS.map(cardHTML).join('');
+  bindCards();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function viewAbout(){
+  setActiveNav('about');
+  app.innerHTML=`<section class="hero"><div class="wrap" style="max-width:760px">
+    <div class="sec-eyebrow reveal">About DailyLoot</div>
+    <h1 class="reveal" style="animation-delay:.05s;font-size:clamp(2.2rem,5vw,3.4rem)">We find the good stuff so you don't have to.</h1>
+    <div class="post-body reveal" style="animation-delay:.12s;margin-top:20px">
+      <p class="lead">DailyLoot is a one-person mission to cut through the noise of online shopping. Every day there are thousands of "must-buy" products — most aren't worth it. We test, compare and review the few that are.</p>
+      <p>When you find something here you like, you click through to buy it from a trusted store. Some of those links are affiliate links, which means we earn a small commission at no extra cost to you. That's what keeps the reviews free — and we only ever recommend things we'd happily buy ourselves.</p>
+      <h2>How it works</h2>
+      <p>Browse the finds on the home page, tap anything that catches your eye, read the honest review, and grab it at the best price through the link. Simple as that.</p>
+      <div style="margin-top:28px"><a class="btn btn-coral" data-nav="home">Start browsing <span class="arr">→</span></a></div>
+    </div>
+  </div></section>`;
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function setActiveNav(v){
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active',a.dataset.nav===v));
+}
+
+/* ---------- ROUTER ---------- */
+function route(){
+  const h=location.hash;
+  if(h.startsWith('#/post/')) return viewPost(h.replace('#/post/',''));
+  if(h==='#/blog') return viewBlog();
+  if(h==='#/about') return viewAbout();
+  return viewHome();
+}
+window.addEventListener('hashchange',route);
+
+/* mobile hamburger toggle */
+const hamburger=document.getElementById('hamburger');
+const navLinks=document.getElementById('navLinks');
+if(hamburger) hamburger.onclick=()=>navLinks.classList.toggle('open');
+
+/* nav + delegated clicks */
+document.addEventListener('click',e=>{
+  const stub=e.target.closest('[data-stub]');
+  if(stub){e.preventDefault();alert("Add your affiliate link in the PRODUCTS list (the 'affiliate' field) and this button will go live.");return;}
+  const nav=e.target.closest('[data-nav]');
+  if(nav){ if(navLinks) navLinks.classList.remove('open'); }
+  if(nav){e.preventDefault();const v=nav.dataset.nav;
+    if(v==='home')location.hash=''; else location.hash='#/'+v;
+    if(location.hash===''&&v==='home')route();
+  }
+});
+
+/* search */
+const search=document.getElementById('search');
+search.addEventListener('input',()=>{
+  query=search.value.trim().toLowerCase();
+  if(!location.hash || location.hash==='#'){ if(!document.getElementById('grid')) viewHome(); renderGrid(); }
+  else { location.hash=''; setTimeout(renderGrid,30); }
+});
+
+/* ---------- LOAD PRODUCTS FROM GOOGLE SHEET (CSV) ---------- */
+// Minimal robust CSV parser: handles quoted fields, commas & newlines inside quotes, and "" escapes.
+function parseCSV(text){
+  const rows=[]; let row=[], field='', i=0, inQ=false;
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  while(i<text.length){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} inQ=false;i++;continue; }
+      field+=c;i++;continue;
+    }
+    if(c==='"'){inQ=true;i++;continue;}
+    if(c===','){row.push(field);field='';i++;continue;}
+    if(c==='\n'){row.push(field);rows.push(row);row=[];field='';i++;continue;}
+    field+=c;i++;
+  }
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  return rows;
+}
+function rowsToProducts(rows){
+  if(!rows.length) return [];
+  const headers=rows[0].map(h=>h.trim().toLowerCase());
+  const idx=name=>headers.indexOf(name);
+  const out=[];
+  for(let r=1;r<rows.length;r++){
+    const cells=rows[r];
+    if(!cells.length || cells.every(c=>!c.trim())) continue; // skip blank lines
+    const g=name=>{const k=idx(name);return k>=0&&cells[k]!=null?cells[k].trim():'';};
+    const id=g('id'); if(!id) continue;
+    const splitList=v=>v?v.split('|').map(s=>s.trim()).filter(Boolean):[];
+    const ratingNum=parseFloat(g('rating'))||0;
+    out.push({
+      id, title:g('title'), category:g('category')||'All',
+      image:g('image'), accent:g('accent')||'#3b5bdb',
+      price:g('price'), was:g('was'),
+      rating:ratingNum, deal:g('deal'),
+      excerpt:g('excerpt'), affiliate:g('affiliate')||'#',
+      post:{
+        lead:g('lead'),
+        sections:[], // simple mode: review built from lead + pros/cons + verdict
+        pros:splitList(g('pros')),
+        cons:splitList(g('cons')),
+        verdict:g('verdict')
+      }
+    });
+  }
+  return out;
+}
+function deriveCategories(list){
+  const set=[];
+  list.forEach(p=>{ if(p.category && !set.includes(p.category)) set.push(p.category); });
+  return ["All", ...set];
+}
+async function loadProducts(){
+  try{
+    const res=await fetch(SHEET_CSV_URL,{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    const parsed=rowsToProducts(parseCSV(text));
+    if(parsed.length){
+      PRODUCTS=parsed;
+      const cats=deriveCategories(parsed);
+      CATEGORIES.length=0; cats.forEach(c=>CATEGORIES.push(c));
+    } else {
+      PRODUCTS=FALLBACK_PRODUCTS;
+    }
+  }catch(err){
+    console.warn('Sheet load failed, using fallback products:',err);
+    PRODUCTS=FALLBACK_PRODUCTS;
+  }
+  route();
+}
+loadProducts();
+</script>
+</body>
+</html>
